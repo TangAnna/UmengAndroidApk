@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "tanganna.com.umengandroidapk"
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true  //突破应用方法数量65535的限制
+        manifestPlaceholders = [CHANNEL_ID_VALUE: "umeng"]  //设置默认的友盟渠道号
+
+    }
+
+    //添加签名文件的配置
+    signingConfigs {
+        debug {}
+
+        release {
+            storeFile file("tanganna.jks")
+            storePassword "tan123456"
+            keyAlias "UmengApk"
+            keyPassword "tan123456"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
+
+            //指定我们的输出的文件的名就是我们的渠道名
+            android.applicationVariants.all{variant ->
+                variant.outputs.all{
+                    output ->
+                        def outFile = output.outputFile
+                        if(outFile != null && outFile.name.endsWith(".apk")){
+                            def fileName = "${variant.productFlavors[0].name}" + ".apk"
+                            outputFileName=fileName;
+                        }
+                }
+            }
+        }
+    }
+
+    //配置渠道号
+    flavorDimensions "default"
+    productFlavors {
+
+        xiaomi {
+//            manifestPlaceholders = [CHANNEL_ID_VALUE: "xiaomi"]
+        }
+
+        wandoujia {
+//            manifestPlaceholders = [CHANNEL_ID_VALUE: "wandoujia"]
+        }
+
+        yingyongbao {
+//            manifestPlaceholders = [CHANNEL_ID_VALUE: "yingyongbao"]
+        }
+
+//        .....其他渠道配置
+    }
+
+    //简单的配置渠道的方式
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [CHANNEL_ID_VALUE: name]
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    友盟统计的依赖
+    implementation 'com.umeng.analytics:analytics:latest.integration'
+}
