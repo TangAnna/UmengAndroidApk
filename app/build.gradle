@@ -6,11 +6,12 @@ android {
         applicationId "tanganna.com.umengandroidapk"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode VERSION_CODE as int
+        versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  //突破应用方法数量65535的限制
         manifestPlaceholders = [CHANNEL_ID_VALUE: "umeng"]  //设置默认的友盟渠道号
+        buildConfigField "String", "API_URL", RELEASE_URL
 
     }
 
@@ -23,6 +24,7 @@ android {
             storePassword "tan123456"
             keyAlias "UmengApk"
             keyPassword "tan123456"
+
         }
     }
 
@@ -34,16 +36,60 @@ android {
             signingConfig signingConfigs.release
 
             //指定我们的输出的文件的名就是我们的渠道名
-            android.applicationVariants.all{variant ->
-                variant.outputs.all{
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
                     output ->
                         def outFile = output.outputFile
-                        if(outFile != null && outFile.name.endsWith(".apk")){
+                        if (outFile != null && outFile.name.endsWith(".apk")) {
                             def fileName = "${variant.productFlavors[0].name}" + ".apk"
-                            outputFileName=fileName;
+                            outputFileName = fileName;
                         }
                 }
             }
+//            设置服务器地址
+            buildConfigField "String", "API_URL", RELEASE_URL
+        }
+
+        dev {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
+
+            //指定我们的输出的文件的名就是我们的渠道名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    output ->
+                        def outFile = output.outputFile
+                        if (outFile != null && outFile.name.endsWith(".apk")) {
+                            def fileName = "${variant.productFlavors[0].name}" + ".apk"
+                            outputFileName = fileName;
+                        }
+                }
+            }
+//            设置服务器地址
+            buildConfigField "String", "API_URL", DEV_URL
+        }
+
+        product {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
+
+            //指定我们的输出的文件的名就是我们的渠道名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    output ->
+                        def outFile = output.outputFile
+                        if (outFile != null && outFile.name.endsWith(".apk")) {
+                            def fileName = "${variant.productFlavors[0].name}" + ".apk"
+                            outputFileName = fileName;
+                        }
+                }
+            }
+//            设置服务器地址
+            buildConfigField "String", "API_URL", TEST_URL
         }
     }
 
